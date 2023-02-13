@@ -3,14 +3,16 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 
-const fs = require("fs");
+const Jimp = require("jimp");
+const fs = require("fs/promises");
+const path = require("path");
 
 const { Balance } = require("../models/balance");
 const { User } = require("../models/user");
 const { Session } = require("../models/session");
 const { SECRET_KEY, REFRESH_SECRET_KEY } = process.env;
 
-const { RequestError, checkData, updateNewAvatar, deleteNewAvatar } = require("../helpers");
+const { RequestError, checkData } = require("../helpers");
 
 const register = async (req, res) => {
   const { username, email, password, firstName } = req.body;
@@ -61,8 +63,8 @@ const login = async (req, res) => {
     id: user._id,
   };
 
-  const accessToken = jwt.sign(paylaod, SECRET_KEY, { expiresIn: "8h" });
-  const refreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "24h" });
+  const accessToken = jwt.sign(paylaod, SECRET_KEY, { expiresIn: "1m" });
+  const refreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "4m" });
   
   const newSession = await Session.create({
     uid: user._id,
@@ -110,8 +112,8 @@ const refreshAccesToken = async (req, res, next) => {
 
       const paylaod = {id: user._id,};
       const newSession = await Session.create({uid: user._id});
-      const newAccessToken = jwt.sign(paylaod, SECRET_KEY, { expiresIn: "8h" });
-      const newRefreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "24h" });
+      const newAccessToken = jwt.sign(paylaod, SECRET_KEY, { expiresIn: "1m" });
+      const newRefreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "4m" });
 
       const result = await User.findByIdAndUpdate(
         user._id,
@@ -142,8 +144,8 @@ const googleSignup = async (req, res) => {
       id: owner,
     };
 
-    const accessToken = jwt.sign(paylaod, SECRET_KEY, { expiresIn: "8h" });
-    const refreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "24h" });
+    const accessToken = jwt.sign(paylaod, SECRET_KEY, { expiresIn: "1m" });
+    const refreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "4m" });
 
     const newSession = await Session.create({
       uid: user._id,
@@ -172,8 +174,8 @@ const googleSignup = async (req, res) => {
     const paylaod = {
       id: owner,
     };
-    const accessToken = jwt.sign(paylaod, SECRET_KEY, { expiresIn: "8h" });
-    const refreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "24h" });
+    const accessToken = jwt.sign(paylaod, SECRET_KEY, { expiresIn: "1m" });
+    const refreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "4m" });
 
     const newSession = await Session.create({
       uid: user._id,
@@ -189,6 +191,7 @@ const googleSignup = async (req, res) => {
   }
 };
 
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 const updateUserController = async (req, res) => {
   const { _id: owner } = req.user;
   const user = await User.findOne(owner);
@@ -196,18 +199,21 @@ const updateUserController = async (req, res) => {
   const { date, month, year, sex, email, firstName, lastName } = req.body;
 
   const avatar = req.file;
-
   if (avatar) {
-    const updatedAvatar = await updateNewAvatar(avatar, owner);
-    
-    const img = fs.readFileSync(updatedAvatar, 'base64');
-    const final_img = {
-      contentType: req.file.mimetype,
-      image: Buffer.from(img,'base64')
-    };
-  
-    const avatarURL = 'data:image/png;base64,' + Buffer.from(final_img.image).toString('base64');
+    const { path: tempUpload, originalname } = req.file;
+    const filename = `${owner}_${originalname}`;
+    const resultUpload = path.join(avatarsDir, filename);
+    await fs.rename(tempUpload, resultUpload);
 
+    const resizeAvatar = await Jimp.read(resultUpload);
+    await resizeAvatar.resize(250, 250).write(resultUpload);
+
+    const production = "https://kapusta-server.herokuapp.com";
+    const development = "http://localhost:4000";
+    const url =
+      process.env.NODE_ENV === "development" ? development : production;
+
+    const avatarURL = `${url}/static/avatars/${filename}`;
     const result = await User.findByIdAndUpdate(
       owner,
       {
@@ -222,8 +228,6 @@ const updateUserController = async (req, res) => {
       },
       { new: true }
     );
-
-    await deleteNewAvatar(updatedAvatar);
 
     res.status(200).json(result);
   } else {

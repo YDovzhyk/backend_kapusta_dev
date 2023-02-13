@@ -14,6 +14,7 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 app.use(logger(formatsLogger))
 app.use(cors())
 app.use(express.json())
+app.use('/static', express.static('public')); // To access a file avatar
 
 app.use('/api/transitions', transitionsRouter)
 app.use('/api/users', authRouter)
