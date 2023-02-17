@@ -158,13 +158,13 @@ const getDataByName = async (req, res) => {
   res.json(reqDateResult.sumByName);
 };
 
-const getDataByCategoryIncome = async (req, res) => {
+const getDataByCategory = async (req, res) => {
   const { error } = schemas.reqDateSchema.validate(req.body);
   if (error) {
     throw RequestError(400, error.message);
   }
   const { _id: owner } = req.user;
-  const result = await Transition.find(
+  const resultIncome = await Transition.find(
     {
       reportDate: `${convertDate(req.body.reqDate)}`,
       owner,
@@ -172,21 +172,8 @@ const getDataByCategoryIncome = async (req, res) => {
     },
     "-createdAt -updatedAt"
   );
-  if (!result) {
-    throw RequestError(404, "Not found");
-  }
 
-  const reqDateResult = reportData(result);
-  res.json(reqDateResult.sumByCategory);
-};
-
-const getDataByCategoryExpenses = async (req, res) => {
-  const { error } = schemas.reqDateSchema.validate(req.body);
-  if (error) {
-    throw RequestError(400, error.message);
-  }
-  const { _id: owner } = req.user;
-  const result = await Transition.find(
+  const resultExpenses = await Transition.find(
     {
       reportDate: `${convertDate(req.body.reqDate)}`,
       owner,
@@ -194,57 +181,77 @@ const getDataByCategoryExpenses = async (req, res) => {
     },
     "-createdAt -updatedAt"
   );
-  if (!result) {
+
+  if (!resultIncome || !resultExpenses) {
     throw RequestError(404, "Not found");
   }
 
-  const reqDateResult = reportData(result);
-  res.json(reqDateResult.sumByCategory);
+  const reqDataIncome = reportData(resultIncome);
+  const reqDataExpenses = reportData(resultExpenses);
+  res.json([{income: reqDataIncome.sumByCategory}, {expenses: reqDataExpenses.sumByCategory}]);
 };
 
-const getDataByCategoryIncomeDateil = async (req, res) => {
+// const getDataByCategoryExpenses = async (req, res) => {
+//   const { error } = schemas.reqDateSchema.validate(req.body);
+//   if (error) {
+//     throw RequestError(400, error.message);
+//   }
+//   const { _id: owner } = req.user;
+//   const result = await Transition.find(
+//     {
+//       reportDate: `${convertDate(req.body.reqDate)}`,
+//       owner,
+//       transitionName: "expenses",
+//     },
+//     "-createdAt -updatedAt"
+//   );
+//   if (!result) {
+//     throw RequestError(404, "Not found");
+//   }
+
+//   const reqDateResult = reportData(result);
+//   res.json(reqDateResult.sumByCategory);
+// };
+
+// const getDataByCategoryIncomeDateil = async (req, res) => {
+//   const { error } = schemas.reqDateAndCategorySchema.validate(req.body);
+//   if (error) {
+//     throw RequestError(400, error.message);
+//   }
+//   const { _id: owner } = req.user;
+//   let transitionCategory = "Salary";
+//   if (req.body.transitionCategory !== "") {
+//     transitionCategory = req.body.transitionCategory;
+//   }
+//   const result = await Transition.find(
+//     {
+//       reportDate: `${convertDate(req.body.reqDate)}`,
+//       owner,
+//       transitionCategory: transitionCategory,
+//       transitionName: "income",
+//     },
+//     "-createdAt -updatedAt"
+//   );
+//   if (!result) {
+//     throw RequestError(404, "Not found");
+//   }
+
+//   const reqDateResult = reportData(result);
+//   res.json(reqDateResult.sumByDescription);
+// };
+
+const getDataByCategoryDetail = async (req, res) => {
   const { error } = schemas.reqDateAndCategorySchema.validate(req.body);
   if (error) {
     throw RequestError(400, error.message);
   }
   const { _id: owner } = req.user;
-  let transitionCategory = "Salary";
-  if (req.body.transitionCategory !== "") {
-    transitionCategory = req.body.transitionCategory;
-  }
+
   const result = await Transition.find(
     {
       reportDate: `${convertDate(req.body.reqDate)}`,
       owner,
-      transitionCategory: transitionCategory,
-      transitionName: "income",
-    },
-    "-createdAt -updatedAt"
-  );
-  if (!result) {
-    throw RequestError(404, "Not found");
-  }
-
-  const reqDateResult = reportData(result);
-  res.json(reqDateResult.sumByDescription);
-};
-
-const getDataByCategoryExpensesDateil = async (req, res) => {
-  const { error } = schemas.reqDateAndCategorySchema.validate(req.body);
-  if (error) {
-    throw RequestError(400, error.message);
-  }
-  const { _id: owner } = req.user;
-  let transitionCategory = "Products";
-  if (req.body.transitionCategory !== "") {
-    transitionCategory = req.body.transitionCategory;
-  }
-  const result = await Transition.find(
-    {
-      reportDate: `${convertDate(req.body.reqDate)}`,
-      owner,
-      transitionCategory: transitionCategory,
-      transitionName: "expenses",
+      transitionCategory: req.body.transitionCategory,
     },
     "-createdAt -updatedAt"
   );
@@ -305,10 +312,9 @@ module.exports = {
   getExpensesMonthly,
   getExpensesByDate,
   getDataByName,
-  getDataByCategoryIncome,
-  getDataByCategoryExpenses,
-  getDataByCategoryIncomeDateil,
-  getDataByCategoryExpensesDateil,
+  getDataByCategory,
+  // getDataByCategoryIncomeDateil,
+  getDataByCategoryDetail,
   getTimeLineData,
   getExpenseCategories,
   getIncomeCategories,

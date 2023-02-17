@@ -18,9 +18,8 @@ const updateNewAvatar = async (avatar, owner) => {
 
 const deleteNewAvatar = async (updatedAvatar) => {
     await fs.unlink(updatedAvatar, err => {
-        if(err) throw err; // не удалось удалить файл
-        console.log('Файл успешно удалён');
-     });
+        if(err) throw err;
+    });
 
 }
 

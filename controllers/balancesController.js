@@ -19,7 +19,6 @@ const addNewBalance = async (req, res) => {
 
 const getBalance = async (req, res) => {
   const { _id: owner } = req.user;
-
   const result = await Balance.findOne({ owner });
   res.status(201).json({ balance: result.balance });
 };

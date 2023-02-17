@@ -18,7 +18,7 @@ const transitionCategory = [
     "Education",
     "Other",
     "Salary",
-    "Add. income"
+    "Add.Income"
 ];
 
 const transitionSchema = new Schema(

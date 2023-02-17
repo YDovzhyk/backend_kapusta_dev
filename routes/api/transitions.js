@@ -22,13 +22,11 @@ router.delete("/delete/:transitionId", authenticate, isValidId, ctrlWrapper(ctrl
 
 router.post("/report/category", authenticate, ctrlWrapper(ctrl.getDataByName));
 
-router.post("/report/category/income", authenticate, ctrlWrapper(ctrl.getDataByCategoryIncome));
+router.post("/report/category/data", authenticate, ctrlWrapper(ctrl.getDataByCategory));
 
-router.post("/report/category/income/dateil", authenticate, ctrlWrapper(ctrl.getDataByCategoryIncomeDateil));
+// router.post("/report/category/income/dateil", authenticate, ctrlWrapper(ctrl.getDataByCategoryIncomeDateil));
 
-router.post("/report/category/expenses", authenticate, ctrlWrapper(ctrl.getDataByCategoryExpenses));
-
-router.post("/report/category/expenses/dateil", authenticate, ctrlWrapper(ctrl.getDataByCategoryExpensesDateil));
+router.post("/report/category/detail", authenticate, ctrlWrapper(ctrl.getDataByCategoryDetail));
 
 router.get("/expense-categories", ctrlWrapper(ctrl.getExpenseCategories));
 
