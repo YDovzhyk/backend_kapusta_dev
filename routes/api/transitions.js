@@ -6,30 +6,21 @@ const ctrl = require("../../controllers/transitionsController");
 
 const router = express.Router();
 
+// Add new transitions
 router.post("/", authenticate, ctrlWrapper(ctrl.addNewTransition));
-
+// Get all data by transitions for period + total balance + userinfo + monthly data
 router.post("/timeLine", authenticate, ctrlWrapper(ctrl.getTimeLineData));
-
-router.get("/income/monthly", authenticate, ctrlWrapper(ctrl.getIncomeMonthly));
-
-router.post("/income/date", authenticate, ctrlWrapper(ctrl.getIncomeByDate));
-
-router.get("/expenses/monthly", authenticate, ctrlWrapper(ctrl.getExpensesMonthly));
-
-router.post("/expenses/date", authenticate, ctrlWrapper(ctrl.getExpensesByDate));
-
+// Get data by income + sum income monthly
+router.post("/income/data", authenticate, ctrlWrapper(ctrl.getIncomeByDate));
+// Get data by expenses + sum income monthly
+router.post("/expenses/data", authenticate, ctrlWrapper(ctrl.getExpensesByDate));
+// Delete transition by Id
 router.delete("/delete/:transitionId", authenticate, isValidId, ctrlWrapper(ctrl.deleteTransition));
-
+// Get data by category income/expenses for period
 router.post("/report/category", authenticate, ctrlWrapper(ctrl.getDataByName));
-
+// Get data income/expenses for period by category name
 router.post("/report/category/data", authenticate, ctrlWrapper(ctrl.getDataByCategory));
-
-// router.post("/report/category/income/dateil", authenticate, ctrlWrapper(ctrl.getDataByCategoryIncomeDateil));
-
+// Get data by category name for period detail
 router.post("/report/category/detail", authenticate, ctrlWrapper(ctrl.getDataByCategoryDetail));
-
-router.get("/expense-categories", ctrlWrapper(ctrl.getExpenseCategories));
-
-router.get("/income-categories", ctrlWrapper(ctrl.getIncomeCategories));
 
 module.exports = router;

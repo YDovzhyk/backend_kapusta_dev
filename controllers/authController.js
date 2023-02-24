@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
@@ -10,7 +9,7 @@ const { User } = require("../models/user");
 const { Session } = require("../models/session");
 const { SECRET_KEY, REFRESH_SECRET_KEY } = process.env;
 
-const { RequestError, checkData, updateNewAvatar, deleteNewAvatar } = require("../helpers");
+const { RequestError, updateNewAvatar, deleteNewAvatar } = require("../helpers");
 
 const register = async (req, res) => {
   const { username, email, password, firstName } = req.body;
@@ -111,7 +110,7 @@ const refreshAccesToken = async (req, res, next) => {
       const paylaod = {id: user._id,};
       const newSession = await Session.create({uid: user._id});
       const newAccessToken = jwt.sign(paylaod, SECRET_KEY, { expiresIn: "8h" });
-      const newRefreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "24h" });
+      const newRefreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "24" });
 
       const result = await User.findByIdAndUpdate(
         user._id,
@@ -143,7 +142,7 @@ const googleSignup = async (req, res) => {
     };
 
     const accessToken = jwt.sign(paylaod, SECRET_KEY, { expiresIn: "8h" });
-    const refreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "24h" });
+    const refreshToken = jwt.sign(paylaod, REFRESH_SECRET_KEY, { expiresIn: "24" });
 
     const newSession = await Session.create({
       uid: user._id,
@@ -211,13 +210,13 @@ const updateUserController = async (req, res) => {
     const result = await User.findByIdAndUpdate(
       owner,
       {
-        firstName: checkData(firstName, user.firstName),
-        lastName: checkData(lastName, user.lastName),
-        gender: checkData(sex, user.gender),
-        dateBirth: checkData(date, user.date),
-        monthBirth: checkData(month, user.month),
-        yearBirth: checkData(year, user.year),
-        email: checkData(email, user.email),
+        firstName: firstName ? firstName : user.firstName,
+        lastName: lastName , lastName : user.lastName,
+        gender: sex ? sex : user.gender,
+        dateBirth: date ? data : user.date,
+        monthBirth: month ? month : user.month,
+        yearBirth: year ? year : user.year,
+        email: email ? email : user.email,
         avatarURL: avatarURL,
       },
       { new: true }
@@ -230,13 +229,13 @@ const updateUserController = async (req, res) => {
     const result = await User.findByIdAndUpdate(
       owner,
       {
-        firstName: checkData(firstName, user.firstName),
-        lastName: checkData(lastName, user.lastName),
-        gender: checkData(sex, user.gender),
-        dateBirth: checkData(date, user.date),
-        monthBirth: checkData(month, user.month),
-        yearBirth: checkData(year, user.year),
-        email: checkData(email, user.email),
+        firstName: firstName ? firstName : user.firstName,
+        lastName: lastName , lastName : user.lastName,
+        gender: sex ? sex : user.gender,
+        dateBirth: date ? data : user.date,
+        monthBirth: month ? month : user.month,
+        yearBirth: year ? year : user.year,
+        email: email ? email : user.email,
       },
       { new: true }
     );

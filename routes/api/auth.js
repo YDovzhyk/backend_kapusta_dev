@@ -29,12 +29,12 @@ router.post(
   validateBody(schemas.googleSchema),
   ctrlWrapper(ctrl.googleSignup)
 );
-
+// logout
 router.get("/logout", 
 authenticate, 
 ctrlWrapper(ctrl.logout)
 );
-
+// update user info
 router.patch(
   "/update",
   authenticate,
@@ -42,20 +42,20 @@ router.patch(
   upload.single("avatar"),
   ctrlWrapper(ctrl.updateUserController)
 );
-
+// delete user
 router.delete(
   "/:userId",
   authenticate,
   isValidId,
   ctrlWrapper(ctrl.deleteUserController)
 );
-
+// refresh user
 router.post(
   "/refresh",
   // validateBody(schemas.refreshTokenSchema), 
   ctrlWrapper(ctrl.refreshAccesToken)
   );
-
+// get current user
   router.get(
   "/current", 
   authenticate, 
