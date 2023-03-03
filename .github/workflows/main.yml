@@ -28,7 +28,7 @@ jobs:
           echo "REFRESH_SECRET_KEY=${{ secrets.REFRESH_SECRET_KEY }}" >> .env
           echo "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}" >> .env
           echo "SENDER_MAIL=${{ secrets.SENDER_MAIL }}" >> .env
-          working-directory: .
+        working-directory: .
         
       - name: Build Docker image
         run: docker build -t yuriydovzhyk/backend-kapusta-dev:latest .
