@@ -57,3 +57,12 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/backend-kapusta-dev:latest
+          
+      - name: Login to Heroku Container Registry
+        run: heroku container:login
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      - name: Push Docker image to Heroku Container Registry
+        run: heroku container:push web -a backend-kapusta-dev
+      - name: Release Docker image on Heroku
+        run: heroku container:release web -a backend-kapusta-dev
