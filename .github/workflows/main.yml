@@ -62,7 +62,7 @@ jobs:
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Login to Heroku Container Registry
+      - name: Login to Heroku
         uses: heroku/login-action@v1
         with:
           email: ${{ secrets.HEROKU_EMAIL }}
