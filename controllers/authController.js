@@ -193,53 +193,46 @@ const updateUserController = async (req, res) => {
   const user = await User.findOne(owner);
 
   const { date, month, year, sex, email, firstName, lastName } = req.body;
-
   const avatar = req.file;
 
   if (avatar) {
     const updatedAvatar = await updateNewAvatar(avatar, owner);
-    
     const img = fs.readFileSync(updatedAvatar, 'base64');
     const final_img = {
       contentType: req.file.mimetype,
       image: Buffer.from(img,'base64')
     };
-  
     const avatarURL = 'data:image/png;base64,' + Buffer.from(final_img.image).toString('base64');
-
     const result = await User.findByIdAndUpdate(
       owner,
       {
         firstName: firstName ? firstName : user.firstName,
-        lastName: lastName , lastName : user.lastName,
+        lastName: lastName ? lastName : user.lastName,
         gender: sex ? sex : user.gender,
-        dateBirth: date ? data : user.date,
-        monthBirth: month ? month : user.month,
-        yearBirth: year ? year : user.year,
+        dateBirth: date ? date : user.dateBirth,
+        monthBirth: month ? month : user.monthBirth,
+        yearBirth: year ? year : user.yearBirth,
         email: email ? email : user.email,
         avatarURL: avatarURL,
       },
       { new: true }
     );
-
     await deleteNewAvatar(updatedAvatar);
-
     res.status(200).json(result);
   } else {
     const result = await User.findByIdAndUpdate(
       owner,
       {
         firstName: firstName ? firstName : user.firstName,
-        lastName: lastName , lastName : user.lastName,
+        lastName: lastName ? lastName : user.lastName,
         gender: sex ? sex : user.gender,
-        dateBirth: date ? data : user.date,
-        monthBirth: month ? month : user.month,
-        yearBirth: year ? year : user.year,
+        dateBirth: date ? date : user.dateBirth,
+        monthBirth: month ? month : user.monthBirth,
+        yearBirth: year ? year : user.yearBirth,
         email: email ? email : user.email,
       },
       { new: true }
     );
-
     res.status(200).json(result);
   }
 };

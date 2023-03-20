@@ -12,7 +12,7 @@ router.post("/", authenticate, ctrlWrapper(ctrl.addNewTransition));
 router.post("/timeLine", authenticate, ctrlWrapper(ctrl.getTimeLineData));
 // Get data by income + sum income monthly
 router.post("/income/data", authenticate, ctrlWrapper(ctrl.getIncomeByDate));
-// Get data by expenses + sum income monthly
+// Get data by expenses + sum expenses monthly
 router.post("/expenses/data", authenticate, ctrlWrapper(ctrl.getExpensesByDate));
 // Delete transition by Id
 router.delete("/delete/:transitionId", authenticate, isValidId, ctrlWrapper(ctrl.deleteTransition));

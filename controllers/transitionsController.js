@@ -5,7 +5,6 @@ const {
   monthlyData,
   convertDate,
   reportData,
-  readParameters
 } = require("../helpers");
 const { schemas } = require("../models/transition");
 
